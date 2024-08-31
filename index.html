@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoL Item Set Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #808080; /* Серый цвет фона */
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        input[type="file"] {
+            display: block;
+            margin: 20px auto;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            background-color: #e0e0e0;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+        img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LoL Item Set Viewer</h1>
+        <input type="file" id="fileInput" accept=".json">
+        <ul id="itemList"></ul>
+    </div>
+
+    <script>
+        const itemNames = {
+            "3340": "Warding Totem (Trinket)",
+            "2055": "Control Ward",
+            "3364": "Oracle Lens",
+            "1056": "Doran's Ring",
+            "2003": "Health Potion",
+            "6657": "Everfrost",
+            "3003": "Archangel's Staff",
+            "3157": "Zhonya's Hourglass",
+            "3020": "Sorcerer's Shoes",
+            "3089": "Rabadon's Deathcap",
+            "3135": "Void Staff",
+            "3165": "Morellonomicon"
+            // Добавьте другие предметы по мере необходимости
+        };
+
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        displayItems(data);
+                    } catch (error) {
+                        alert('Ошибка при чтении файла. Пожалуйста, загрузите правильный .json файл.');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function displayItems(data) {
+            const itemList = document.getElementById('itemList');
+            itemList.innerHTML = '';
+
+            if (data.blocks && data.blocks.length > 0) {
+                data.blocks.forEach(block => {
+                    const header = document.createElement('li');
+                    header.textContent = block.type;
+                    header.style.fontWeight = 'bold';
+                    itemList.appendChild(header);
+
+                    block.items.forEach(item => {
+                        const listItem = document.createElement('li');
+
+                        // Создание URL для изображения предмета
+                        const imgUrl = `https://ddragon.leagueoflegends.com/cdn/13.4.1/img/item/${item.id}.png`;
+                        
+                        const img = document.createElement('img');
+                        img.src = imgUrl;
+                        img.alt = `Item ${item.id}`;
+                        
+                        const itemName = itemNames[item.id] || `Unknown Item (ID: ${item.id})`;
+                        
+                        listItem.appendChild(img);
+                        listItem.appendChild(document.createTextNode(`${itemName}, Количество: ${item.count}`));
+                        itemList.appendChild(listItem);
+                    });
+                });
+            } else {
+                const noData = document.createElement('li');
+                noData.textContent = 'Нет данных для отображения.';
+                itemList.appendChild(noData);
+            }
+        }
+    </script>
+</body>
+</html>
