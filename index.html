@@ -54,22 +54,6 @@
     </div>
 
     <script>
-        const itemNames = {
-            "3340": "Warding Totem (Trinket)",
-            "2055": "Control Ward",
-            "3364": "Oracle Lens",
-            "1056": "Doran's Ring",
-            "2003": "Health Potion",
-            "6657": "Everfrost",
-            "3003": "Archangel's Staff",
-            "3157": "Zhonya's Hourglass",
-            "3020": "Sorcerer's Shoes",
-            "3089": "Rabadon's Deathcap",
-            "3135": "Void Staff",
-            "3165": "Morellonomicon"
-            // Добавьте другие предметы по мере необходимости
-        };
-
         document.getElementById('fileInput').addEventListener('change', function(event) {
             const file = event.target.files[0];
             if (file) {
@@ -102,15 +86,21 @@
 
                         // Создание URL для изображения предмета
                         const imgUrl = `https://ddragon.leagueoflegends.com/cdn/13.4.1/img/item/${item.id}.png`;
-                        
+
+                        // Ссылка на предмет на сайте Fandom
+                        const itemLink = `https://leagueoflegends.fandom.com/wiki/${item.id}_item`;
+
+                        const link = document.createElement('a');
+                        link.href = itemLink;
+                        link.target = '_blank';
+
                         const img = document.createElement('img');
                         img.src = imgUrl;
                         img.alt = `Item ${item.id}`;
-                        
-                        const itemName = itemNames[item.id] || `Unknown Item (ID: ${item.id})`;
-                        
-                        listItem.appendChild(img);
-                        listItem.appendChild(document.createTextNode(`${itemName}, Количество: ${item.count}`));
+
+                        link.appendChild(img);
+                        listItem.appendChild(link);
+                        listItem.appendChild(document.createTextNode(`Количество: ${item.count}`));
                         itemList.appendChild(listItem);
                     });
                 });
