@@ -4,54 +4,108 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoL Item Set Viewer</title>
+    <title>LoL Item Viewer</title>
+    <link rel="icon" href="https://i.imgur.com/tEPAPkk.png" type="image/png"> <!-- Логотип в строке вкладок -->
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #808080; /* Серый цвет фона */
+            font-family: 'Friz Quadrata', Arial, sans-serif; /* Шрифт в стиле LoL */
+            background-color: #1c1c1c; /* Тёмно-серый фон, напоминающий интерфейс LoL */
+            color: #f0e6d2; /* Цвет текста в стиле LoL */
             margin: 0;
             padding: 20px;
+            position: relative; /* Для позиционирования плавающего логотипа */
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 0 auto;
-            background-color: #ffffff;
+            background-color: rgba(44, 47, 51, 0.8); /* Полупрозрачный фон контейнера */
             padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border: 2px solid #4a4a4a; /* Обводка в стиле рамок LoL */
         }
-        h1 {
+        .header {
             text-align: center;
+            margin-bottom: 20px;
+        }
+        .title {
+            color: #ffd700; /* Золотистый цвет заголовка, напоминающий цвет текста LoL */
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px #000000; /* Текст с тенью для эффекта 3D */
+            margin: 0;
         }
         input[type="file"] {
             display: block;
             margin: 20px auto;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        li {
-            background-color: #e0e0e0;
-            margin: 5px 0;
+            background-color: #3f51b5; /* Цвет кнопки в стиле LoL */
+            color: white;
             padding: 10px;
-            border-radius: 4px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        input[type="file"]:hover {
+            background-color: #303f9f; /* Цвет при наведении мыши */
+        }
+        .block-container {
+            margin-bottom: 20px;
+            background-color: rgba(28, 28, 28, 0.8); /* Полупрозрачный фон для всего блока */
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+        .block-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        .item-list {
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .item {
+            background-color: rgba(50, 50, 50, 0.9); /* Светлый фон для предметов */
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            text-align: center;
         }
         img {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
+            width: 64px;
+            height: 64px;
+        }
+        /* Стиль для плавающего изображения */
+        .floating-logo {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+        .floating-logo:hover {
+            opacity: 0.8;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>LoL Item Set Viewer</h1>
+        <div class="header">
+            <h1 class="title">LoL Item Viewer</h1>
+        </div>
+
         <input type="file" id="fileInput" accept=".json">
-        <ul id="itemList"></ul>
+
+        <div id="content"></div>
     </div>
+
+    <!-- Плавающее изображение с ссылкой -->
+    <a href="https://discord.gg/U6m5tEE6jv" target="_blank">
+        <img class="floating-logo" src="https://i.imgur.com/lrFPVdS.png" alt="Discord Logo">
+    </a>
 
     <script>
         document.getElementById('fileInput').addEventListener('change', function(event) {
@@ -71,43 +125,45 @@
         });
 
         function displayItems(data) {
-            const itemList = document.getElementById('itemList');
-            itemList.innerHTML = '';
+            const content = document.getElementById('content');
+            content.innerHTML = '';
 
             if (data.blocks && data.blocks.length > 0) {
                 data.blocks.forEach(block => {
-                    const header = document.createElement('li');
+                    const blockContainer = document.createElement('div');
+                    blockContainer.className = 'block-container';
+
+                    const header = document.createElement('div');
+                    header.className = 'block-header';
                     header.textContent = block.type;
-                    header.style.fontWeight = 'bold';
-                    itemList.appendChild(header);
+                    blockContainer.appendChild(header);
+
+                    const itemList = document.createElement('div');
+                    itemList.className = 'item-list';
 
                     block.items.forEach(item => {
-                        const listItem = document.createElement('li');
+                        const listItem = document.createElement('div');
+                        listItem.className = 'item';
 
                         // Создание URL для изображения предмета
                         const imgUrl = `https://ddragon.leagueoflegends.com/cdn/13.4.1/img/item/${item.id}.png`;
-
-                        // Ссылка на предмет на сайте Fandom
-                        const itemLink = `https://leagueoflegends.fandom.com/wiki/${item.id}_item`;
-
-                        const link = document.createElement('a');
-                        link.href = itemLink;
-                        link.target = '_blank';
 
                         const img = document.createElement('img');
                         img.src = imgUrl;
                         img.alt = `Item ${item.id}`;
 
-                        link.appendChild(img);
-                        listItem.appendChild(link);
-                        listItem.appendChild(document.createTextNode(`Количество: ${item.count}`));
+                        listItem.appendChild(img);
                         itemList.appendChild(listItem);
                     });
+
+                    blockContainer.appendChild(itemList);
+                    content.appendChild(blockContainer);
                 });
             } else {
-                const noData = document.createElement('li');
+                const noData = document.createElement('div');
+                noData.className = 'text-block';
                 noData.textContent = 'Нет данных для отображения.';
-                itemList.appendChild(noData);
+                content.appendChild(noData);
             }
         }
     </script>
